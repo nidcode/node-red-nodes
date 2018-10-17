@@ -6,14 +6,15 @@ module.exports = function(RED) {
 
     function MySQLNode(n) {
         RED.nodes.createNode(this,n);
-        this.host = n.host;
-        this.port = n.port;
+
+        this.host = n.host || process.env.MYSQL_HOST || '127.0.0.1';
+        this.port = n.port || process.env.MYSQL_PORT || 3306;
         this.tz = n.tz || "local";
 
         this.connected = false;
         this.connecting = false;
 
-        this.dbname = n.db;
+        this.dbname = n.db || process.env.MYSQL_DBNAME;
         this.setMaxListeners(0);
         var node = this;
 
@@ -35,8 +36,8 @@ module.exports = function(RED) {
                 node.pool = mysqldb.createPool({
                     host : node.host,
                     port : node.port,
-                    user : node.credentials.user,
-                    password : node.credentials.password,
+                    user : node.credentials.user || process.env.MYSQL_USER,
+                    password : node.credentials.password || process.env.MYSQL_PASSWORD,
                     database : node.dbname,
                     timezone : node.tz,
                     insecureAuth: true,
